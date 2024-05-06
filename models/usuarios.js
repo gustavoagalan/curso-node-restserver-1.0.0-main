@@ -18,7 +18,7 @@ const UsuarioSchema = Schema(
         },
         rol: {
             type: String,
-            required: false,
+            required: true,
             // enum: ['ADMIN_ROLE','USER_ROLE', 'VENTAS_ROLE']
         },
         estado: {
@@ -39,7 +39,9 @@ const UsuarioSchema = Schema(
     //Aqui escogemos que llaves del Usuario no se van a mostrar en la respuesta del body
 
 UsuarioSchema.methods.toJSON = function () {
-    const { __v,  google, img,   ...usuarioojo } = this.toObject();
+    const { __v,  google, img, _id, nombre,  ...usuarioojo } = this.toObject();
+   usuarioojo.uid = _id;
+   usuarioojo.namegus = nombre;
     return usuarioojo;
 }
 

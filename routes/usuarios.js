@@ -7,7 +7,12 @@ const { usuariosGet,
         usuariosPost,
         usuariosDelete,
         usuariosPatch } = require('../controllers/usuarios_controllers');
-const { validarCampos } = require('../middlewares/validar-campos');
+
+//const { validarCampos } = require('../middlewares/validar-campos');
+//const { validarJWT } = require('../middlewares/validar-jwt');
+//const { esAdminRole, tieneRole } = require('../middlewares/validar-roles');
+const {validarCampos, validarJWT, esAdminRole, tieneRole } = require('../middlewares/index');
+
 
 const router = Router();
 
@@ -26,20 +31,26 @@ usuariosPut );
 router.post('/', 
 [   
     check('nombre','El nombre es obligatorio').not().isEmpty(),
-    check('password','El password debe ser de mas de 6 letras gus').isLength({min:6}),
+    check('password','El password debe ser de mas de 6 letras gus')
+    .isLength({min:6}),
     check('correo','El correo no es valido Gus Galan').isEmail(),
     check('correo').custom(emailExiste),
- // check('rol', 'No es un rol permitido').isIn([ 'ADMIN_ROLE','USER_ROLE']),
+ // check('rol', 'No es un rol permitido')
+ //.isIn([ 'ADMIN_ROLE','USER_ROLE']),
     check('rol').custom(esRoleValido),
    validarCampos
 ],
 usuariosPost );
 
 router.delete('/:id', 
-[
-   check('id', 'No es un ID Valido de MongoDB').isMongoId().bail().custom(existeUsuarioPorId),
+[  
+   validarJWT,
+   //esAdminRole, // este middleware solo acepta rol: adm
+   tieneRole('adm', 'ventas', 'nosequesesto'), //este middleware acepta los roles escritos
+   check('id', 'No es un ID Valido de MongoDB')
+   .isMongoId().bail()
+   .custom(existeUsuarioPorId),
    validarCampos
-
 
 
 ],
@@ -47,7 +58,5 @@ usuariosDelete );
 
 router.patch('/', usuariosPatch );
 module.exports = router;
-
-
 
 

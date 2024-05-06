@@ -22,8 +22,8 @@ const usuariosGet = async (req = request, res = response) => {
 }
 
 const usuariosPost = async (req, res = response) => {
-    const  {nombre, correo, password, img} = req.body;
-    const usuario= new Usuario({nombre, correo, password, img});
+    const  {nombre, correo, password, img, rol} = req.body;
+    const usuario= new Usuario({nombre, correo, password, img, rol});
 
      //Encriptar la contraseña
      const salt = bcryptjs.genSaltSync(10);
@@ -68,12 +68,13 @@ const usuariosDelete = async (req, res = response) => {
     //Fisicamente lo borramos
     //const usuario = await Usuario.findByIdAndDelete(id);
 
+    //Cambiar el estado
     const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
-
+    const usuarioAutenticado = req.usuario;
 
     res.json({
         msg: 'delete API - usuariosDelete',
-       usuario
+       usuario, usuarioAutenticado
     });
 }
 
